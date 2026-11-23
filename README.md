@@ -95,6 +95,31 @@ Junto da data e hora da resposta da API.
   vp build
   ```
 
+## Banco de dados - Atividade 2
+
+O projeto utiliza MySQL. Após instalar o MySQL, mantenha o servidor ativo na porta `3306`.
+
+Crie ou recrie o banco e os dados iniciais na pasta do projeto:
+
+```powershell
+& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/schema.sql"
+& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/seed.sql"
+```
+
+Repita o primeiro comando duas vezes seguidas para conferir que o `schema.sql` recria o banco sem erros.
+
+As configurações locais ficam em `.env`:
+
+```text
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=conectadoa
+```
+
+Nunca envie `.env` ao GitHub. Use `.env.example` como referência.
+
 ## Publicar alteracoes no GitHub
 
 ```bash
