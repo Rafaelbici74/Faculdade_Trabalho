@@ -21,6 +21,10 @@ conectadoa/
 └── vite.config.ts
 ```
 
+## Uso de agente de IA
+
+A arquitetura inicial do projeto e a criação dos commits foram automatizadas com auxílio de um agente personalizado do GitHub Copilot no VS Code. O código e as instruções foram verificados durante o desenvolvimento.
+
 ## Requisitos
 
 - Git
