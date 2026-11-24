@@ -138,32 +138,21 @@ O arquivo `api.http` contém testes manuais das rotas. No VS Code, use a extens�
 
 ## Banco de dados - Atividade 2
 
-O projeto utiliza MySQL na porta `3306`.
+O projeto utiliza MySQL na porta `3306`. Siga os passos abaixo no Windows.
 
-Crie ou recrie o banco e os dados iniciais na pasta do projeto:
+### 1. Inicie o servidor MySQL
 
-```powershell
-& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/schema.sql"
-& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/seed.sql"
-```
-
-Repita o primeiro comando duas vezes seguidas para conferir que o `schema.sql` recria o banco sem erros.
-
-Para restaurar os dados iniciais após testes de cadastro ou exclusão:
+Abra um terminal PowerShell separado e mantenha-o aberto enquanto usa o banco:
 
 ```powershell
-& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/schema.sql"
-& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -h 127.0.0.1 --execute "SOURCE C:/Users/rafae/OneDrive/Desktop/facul/Faculdade_Trabalho/conectadoa/database/seed.sql"
+& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysqld.exe" --console --basedir="C:\Program Files\MySQL\MySQL Server 8.4" --datadir="C:\ProgramData\MySQL\MySQL Server 8.4\Data" --port=3306
 ```
 
-Os dados iniciais esperados são:
+Espere aparecer `ready for connections`. Se o MySQL já estiver rodando como serviço, não inicie uma segunda instância.
 
-- 4 doadores
-- 9 itens
-- 3 doações
-- 7 vínculos entre doações e itens
+### 2. Configure a conexão local
 
-As configurações locais ficam em `.env`:
+Na pasta `conectadoa`, crie `.env` a partir de `.env.example` se ainda não existir. As configurações locais usadas neste projeto são:
 
 ```text
 DB_HOST=127.0.0.1
@@ -173,7 +162,58 @@ DB_PASSWORD=
 DB_NAME=conectadoa
 ```
 
-Nunca envie `.env` ao GitHub. Use `.env.example` como referência.
+O usuário local `root` foi configurado sem senha neste ambiente. Nunca envie `.env` ao GitHub; use `.env.example` como referência.
+
+### 3. Execute e valide o schema
+
+Abra outro PowerShell na pasta `conectadoa`. Defina o caminho do cliente MySQL e do schema:
+
+```powershell
+$mysql = "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe"
+$schema = (Resolve-Path .\database\schema.sql).Path.Replace('\', '/')
+```
+
+Execute o schema **duas vezes seguidas**, como pede a atividade:
+
+```powershell
+& $mysql -u root -h 127.0.0.1 --execute "SOURCE $schema"
+& $mysql -u root -h 127.0.0.1 --execute "SOURCE $schema"
+```
+
+As duas execuções devem voltar ao prompt sem mostrar `ERROR`. Para confirmar que as cinco tabelas foram criadas:
+
+```powershell
+& $mysql -u root -h 127.0.0.1 -e "USE conectadoa; SHOW TABLES;"
+```
+
+**Atenção:** `schema.sql` apaga e recria o banco. Se executar novamente depois de carregar dados ou cadastrar informações, esses dados serão apagados.
+
+### 4. (Opcional) Carregue dados de exemplo
+
+O `seed.sql` é auxiliar para testar a API; não é pedido como arquivo de entrega da Atividade 2. Execute-o depois de validar o schema:
+
+```powershell
+$seed = (Resolve-Path .\database\seed.sql).Path.Replace('\', '/')
+& $mysql -u root -h 127.0.0.1 --execute "SOURCE $seed"
+```
+
+Para conferir os dados de exemplo:
+
+```powershell
+& $mysql -u root -h 127.0.0.1 -e "SELECT COUNT(*) AS doadores FROM conectadoa.doador; SELECT COUNT(*) AS itens FROM conectadoa.item; SELECT COUNT(*) AS doacoes FROM conectadoa.doacao; SELECT COUNT(*) AS doacao_item FROM conectadoa.doacao_item;"
+```
+
+O resultado esperado é 4 doadores, 9 itens, 3 doações e 7 associações.
+
+### Arquivo a enviar na Atividade 2
+
+O PDF oficial da atividade solicita que você envie **somente o arquivo `schema.sql`** no campo da Atividade 2 na plataforma:
+
+```text
+conectadoa/database/schema.sql
+```
+
+Não é pedido enviar o `seed.sql`, captura de tela ou o repositório para esta atividade. O `seed.sql`, a API e as telas são materiais de apoio/continuação do projeto.
 
 ## Publicar alteracoes no GitHub
 
